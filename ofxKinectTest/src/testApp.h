@@ -4,9 +4,16 @@
 #include "ofxOpenCv.h"
 #include "ofxKinect.h"
 #include "ofxUI.h"
+#include "ofxTweenzor.h"
 
 // uncomment this to read from two kinects simultaneously
 //#define USE_TWO_KINECTS
+struct vizVars{
+    float step;
+    float pointSize;
+    float colorWeight;
+    
+};
 
 class testApp : public ofBaseApp {
 public:
@@ -45,6 +52,7 @@ public:
 	int farThreshold;
 	
 	int angle;
+    bool tweening;
 	
 	// used for viewing the point cloud
 	ofEasyCam easyCam;
@@ -57,6 +65,12 @@ public:
     
     bool useEasyCam;
     
+    vector<vizVars> vizVarSequence;
+    
     float colorWeight;
     ofFloatColor getWeightedColor( float inWeight, ofFloatColor inConstant, int inX, int inY );
+    
+    int curVizVarIndex;
+    void gotoNextViz();
+    void onVizTweenComplete( float * arg);
 };

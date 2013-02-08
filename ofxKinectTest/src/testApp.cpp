@@ -1,9 +1,10 @@
 #include "testApp.h"
 
-
+#define TWEEN_TIME 10.f
 //--------------------------------------------------------------
 void testApp::setup() {
 	ofSetLogLevel(OF_LOG_VERBOSE);
+    Tweenzor::init();
 	
 	// enable depth->video image calibration
 	kinect.setRegistration(true);
@@ -16,6 +17,7 @@ void testApp::setup() {
 	//kinect.open(1);	// open a kinect by id, starting with 0 (sorted by serial # lexicographically))
 	//kinect.open("A00362A08602047A");	// open a kinect using it's unique serial #
 	
+    curVizVarIndex = 0;
 #ifdef USE_TWO_KINECTS
 	kinect2.init();
 	kinect2.open();
@@ -43,20 +45,52 @@ void testApp::setup() {
     pointSize = 2;
     
     //ui stuff
-    useEasyCam = false; //have to prevent easycam to be able to widget
+    useEasyCam = true; //have to prevent easycam to be able to widget
     float dim = 16; 
     float xInit = OFX_UI_GLOBAL_WIDGET_SPACING; 
     float length = 320-xInit; 
-    colorWeight = 0;
+    colorWeight = 1;
     
     
     gui = new ofxUICanvas(0,0,length+xInit*2.0,ofGetHeight());
     drawFill = true;     
-    gui->addWidgetDown(new ofxUILabel("VARIABLE BINDING EXAMPLE", OFX_UI_FONT_LARGE)); 
+    gui->addWidgetDown(new ofxUILabel("BGS FEBRUARY BETA", OFX_UI_FONT_LARGE)); 
     gui->addSlider("STEP", 1.f, 20.f, &step, length,dim);
     gui->addSlider("POINT SIZE", .1f, 20.f, &pointSize, length,dim);
     gui->addSlider("COLOR WEIGHT", 0.f, 1.f, &colorWeight, length,dim);
     
+    vizVarSequence.push_back(vizVars()) ;
+    vizVarSequence.push_back(vizVars()) ;
+    vizVarSequence.push_back(vizVars()) ;
+    vizVarSequence.push_back(vizVars()) ;    
+    vizVarSequence.push_back(vizVars()) ;
+
+    
+    vizVarSequence[0].step = 8.88f;
+    vizVarSequence[0].pointSize = 9.36f;
+    vizVarSequence[0].colorWeight = 0.44f;
+    
+    vizVarSequence[1].step = 1.78f;
+    vizVarSequence[1].pointSize = 2.37f;
+    vizVarSequence[1].colorWeight = 0.49f;
+    
+    vizVarSequence[2].step = 8.88f;
+    vizVarSequence[2].pointSize = 1.f;
+    vizVarSequence[2].colorWeight = 0.9f;
+    
+    vizVarSequence[3].step = 8.88f;
+    vizVarSequence[3].pointSize = 20.f;
+    vizVarSequence[3].colorWeight = 0.14f;
+    
+    
+    vizVarSequence[4].step = 2.f;
+    vizVarSequence[4].pointSize = 5.f;
+    vizVarSequence[4].colorWeight = 0.f;
+    
+    
+    tweening = true;
+    
+    gotoNextViz();
     
     
 }
@@ -65,7 +99,9 @@ void testApp::setup() {
 void testApp::update() {
     
 	ofBackground(100, 100, 100);
-	
+    if ( tweening )
+        Tweenzor::update(ofGetElapsedTimeMillis());
+    cout << "testApp::update::point:" << pointSize << ", step:" << step << ", colorWeight:" << colorWeight <<endl;
 	kinect.update();
 	
 	// there is a new frame and we are connected
@@ -172,7 +208,7 @@ void testApp::drawPointCloud() {
 	ofMesh mesh;
 	mesh.setMode(OF_PRIMITIVE_POINTS);
 	
-    ofFloatColor blue( .2f, .4f, 1.f);
+    ofFloatColor blue( .45f, .88f, .925f);
 	for( float y = 0; y < h; y += step) {
 		for( float x = 0; x < w; x += step) {
 			if(kinect.getDistanceAt(x, y) > 0) {
@@ -211,7 +247,7 @@ ofFloatColor testApp::getWeightedColor(float inWeight, ofFloatColor inConstant, 
 
 //--------------------------------------------------------------
 void testApp::exit() {
-	kinect.setCameraTiltAngle(0); // zero the tilt on exit
+	//kinect.setCameraTiltAngle(0); // zero the tilt on exit
 	kinect.close();
 	
 #ifdef USE_TWO_KINECTS
@@ -293,6 +329,9 @@ void testApp::keyPressed (int key) {
         case 'e':
 			useEasyCam = !useEasyCam;
 			break;
+        case 't':
+            tweening = !tweening;
+            break;
 			
 		case OF_KEY_UP:
 			angle++;
@@ -306,6 +345,25 @@ void testApp::keyPressed (int key) {
 			kinect.setCameraTiltAngle(angle);
 			break;
 	}
+}
+//--------------------------------------------------------------
+void testApp::gotoNextViz(){
+
+    Tweenzor::add( &step, step, vizVarSequence[ curVizVarIndex].step , 0.f, (float)TWEEN_TIME );
+    Tweenzor::add( &colorWeight, colorWeight, vizVarSequence[ curVizVarIndex].colorWeight , 0.f, (float)TWEEN_TIME );
+    Tweenzor::add( &pointSize, pointSize, vizVarSequence[ curVizVarIndex].pointSize , 0.f, (float)TWEEN_TIME );
+    Tweenzor::addCompleteListener(Tweenzor::getTween(&step), this, &testApp::onVizTweenComplete );
+
+}
+
+//--------------------------------------------------------------
+void testApp::onVizTweenComplete(float *arg){
+    curVizVarIndex++;
+    if (curVizVarIndex >= vizVarSequence.size() ){
+        curVizVarIndex = 0;
+    }
+    gotoNextViz();
+    
 }
 
 //--------------------------------------------------------------
