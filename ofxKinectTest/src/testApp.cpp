@@ -51,6 +51,10 @@ void testApp::setup() {
     float length = 320-xInit; 
     colorWeight = 1;
     
+    bgColorR = bgColorG = bgColorB = 0.f;
+    pixelColorR = .45f;
+    pixelColorG = .88f; 
+    pixelColorB = .925f;
     
     gui = new ofxUICanvas(0,0,length+xInit*2.0,ofGetHeight());
     drawFill = true;     
@@ -58,6 +62,19 @@ void testApp::setup() {
     gui->addSlider("STEP", 1.f, 20.f, &step, length,dim);
     gui->addSlider("POINT SIZE", .1f, 20.f, &pointSize, length,dim);
     gui->addSlider("COLOR WEIGHT", 0.f, 1.f, &colorWeight, length,dim);
+    
+    gui->addSlider("PixelR", 0.f, 1.f, &pixelColorR, length,dim);
+    gui->addSlider("PixelG", 0.f, 1.f, &pixelColorG, length,dim);
+    gui->addSlider("PixelB", 0.f, 1.f, &pixelColorB, length,dim);
+    
+    
+    gui->addSlider("BG R", 0.f, 255.f, &bgColorR, length,dim);
+    gui->addSlider("BG G", 0.f, 255.f, &bgColorG, length,dim);
+    gui->addSlider("BG B", 0.f, 255.f, &bgColorB, length,dim);
+    
+    
+    
+    
     
     vizVarSequence.push_back(vizVars()) ;
     vizVarSequence.push_back(vizVars()) ;
@@ -98,7 +115,7 @@ void testApp::setup() {
 //--------------------------------------------------------------
 void testApp::update() {
     
-	ofBackground(100, 100, 100);
+	
     if ( tweening )
         Tweenzor::update(ofGetElapsedTimeMillis());
     cout << "testApp::update::point:" << pointSize << ", step:" << step << ", colorWeight:" << colorWeight <<endl;
@@ -202,13 +219,14 @@ void testApp::draw() {
 }
 
 void testApp::drawPointCloud() {
-    ofBackground(0,0, 0);
+    ofBackground(bgColorR, bgColorG, bgColorB);
+    
 	int w = 640;
 	int h = 480;
 	ofMesh mesh;
 	mesh.setMode(OF_PRIMITIVE_POINTS);
 	
-    ofFloatColor blue( .45f, .88f, .925f);
+    ofFloatColor blue( pixelColorR, pixelColorG, pixelColorB);
 	for( float y = 0; y < h; y += step) {
 		for( float x = 0; x < w; x += step) {
 			if(kinect.getDistanceAt(x, y) > 0) {

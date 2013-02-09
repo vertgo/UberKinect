@@ -73,4 +73,15 @@ public:
     int curVizVarIndex;
     void gotoNextViz();
     void onVizTweenComplete( float * arg);
+    
+    float pixelColorR;
+    float pixelColorG;
+    float pixelColorB;
+    
+    
+    float bgColorR;
+    float bgColorG;
+    float bgColorB;
+    
+    
 };
