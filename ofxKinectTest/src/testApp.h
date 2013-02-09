@@ -80,6 +80,7 @@ public:
     float pixelColorG;
     float pixelColorB;
     
+    float curPitch;
     
     float bgColorR;
     float bgColorG;

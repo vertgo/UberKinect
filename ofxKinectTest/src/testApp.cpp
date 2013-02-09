@@ -72,7 +72,7 @@ void testApp::setup() {
     gui->addSlider("BG G", 0.f, 255.f, &bgColorG, length,dim);
     gui->addSlider("BG B", 0.f, 255.f, &bgColorB, length,dim);
     
-    
+    curPitch = 0;
     
     
     
@@ -120,7 +120,7 @@ void testApp::update() {
     
     if ( tweening )
         Tweenzor::update(ofGetElapsedTimeMillis());
-    cout << "testApp::update::point:" << pointSize << ", step:" << step << ", colorWeight:" << colorWeight <<endl;
+    //cout << "testApp::update::point:" << pointSize << ", step:" << step << ", colorWeight:" << colorWeight <<endl;
 	kinect.update();
 	
 	// there is a new frame and we are connected
@@ -168,7 +168,7 @@ void testApp::update() {
 //--------------------------------------------------------------
 void testApp::draw() {
     if (!camMoved ){
-        easyCam.move(0,0,-1000);
+        //easyCam.move(0,0,-1000);
         camMoved = true;
         
     }
@@ -249,7 +249,13 @@ void testApp::drawPointCloud() {
 	ofPushMatrix();
 	// the projected points are 'upside down' and 'backwards' 
 	ofScale(1, -1, -1);
-	ofTranslate(0, 0, -1000); // center the points a bit
+	//ofTranslate(0, 0, -1000); // center the points a bit
+    cout << "pitch:" << kinect.getAccelPitch() << ", roll:" << kinect.getAccelRoll() <<endl;
+    
+    curPitch = .9*curPitch + .1 *kinect.getAccelPitch();//dampen the pitch
+    
+    ofRotate( curPitch, 1.f, 0.f, 0.f);
+    
 	glEnable(GL_DEPTH_TEST);
 	mesh.drawVertices();
 	glDisable(GL_DEPTH_TEST);
