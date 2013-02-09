@@ -36,10 +36,10 @@ void testApp::setup() {
 	
 	// zero the tilt on startup
 	angle = 0;
-	kinect.setCameraTiltAngle(angle);
+	//kinect.setCameraTiltAngle(angle);
 	
 	// start from the front
-	bDrawPointCloud = false;
+	bDrawPointCloud = true;
     
     step = 2;
     pointSize = 2;
@@ -108,14 +108,16 @@ void testApp::setup() {
     tweening = true;
     
     gotoNextViz();
+    easyCam.begin();
+    //easyCam.move(0,0,-100000);
+    easyCam.end();
     
-    
+    camMoved = false;
 }
 
 //--------------------------------------------------------------
 void testApp::update() {
     
-	
     if ( tweening )
         Tweenzor::update(ofGetElapsedTimeMillis());
     cout << "testApp::update::point:" << pointSize << ", step:" << step << ", colorWeight:" << colorWeight <<endl;
@@ -165,7 +167,12 @@ void testApp::update() {
 
 //--------------------------------------------------------------
 void testApp::draw() {
-	
+    if (!camMoved ){
+        easyCam.move(0,0,-1000);
+        camMoved = true;
+        
+    }
+
 	ofSetColor(255, 255, 255);
 	
 	if(bDrawPointCloud) {
@@ -311,11 +318,11 @@ void testApp::keyPressed (int key) {
 			kinect.enableDepthNearValueWhite(!kinect.isDepthNearValueWhite());
 			break;
 			
-		case 'o':
+		/*case 'o':
 			kinect.setCameraTiltAngle(angle); // go back to prev tilt
 			kinect.open();
 			break;
-			
+		*/
 		case 'c':
 			kinect.setCameraTiltAngle(0); // zero the tilt
 			kinect.close();

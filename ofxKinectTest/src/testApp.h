@@ -30,6 +30,7 @@ public:
 	void mousePressed(int x, int y, int button);
 	void mouseReleased(int x, int y, int button);
 	void windowResized(int w, int h);
+    
 	
 	ofxKinect kinect;
 	
@@ -56,6 +57,7 @@ public:
 	
 	// used for viewing the point cloud
 	ofEasyCam easyCam;
+    //ofCamera easyCam;
         
     //gui stuff
     ofxUICanvas *gui;   
@@ -82,6 +84,8 @@ public:
     float bgColorR;
     float bgColorG;
     float bgColorB;
+    
+    bool camMoved;
     
     
 };
