@@ -108,9 +108,13 @@ void testApp::setup() {
     tweening = true;
     
     gotoNextViz();
+    
+    //cam stuff
+    xPosSinIndex = 0;
     easyCam.begin();
-    //easyCam.move(0,0,-100000);
+
     easyCam.end();
+    easyCam.setPosition(0, 0, -1000);
     
     camMoved = false;
 }
@@ -167,12 +171,15 @@ void testApp::update() {
 
 //--------------------------------------------------------------
 void testApp::draw() {
-    if (!camMoved ){
-        //easyCam.move(0,0,-1000);
-        camMoved = true;
-        
-    }
-
+    float xPos = 500 * sin( xPosSinIndex );
+    xPosSinIndex+= .005;
+        easyCam.setPosition( xPos, -500, -500);
+    easyCam.lookAt( ofVec3f( -0.f, -0.f, -5000.f) );
+    //easyCam.getPitch();
+    
+    //cout << "testApp::draw::easycamPitch:" << camPitch << endl;
+    //easyCam.rotate( easyCam.getPitch() - 45 , 1.f, 0.f, 0.f);
+    
 	ofSetColor(255, 255, 255);
 	
 	if(bDrawPointCloud) {
@@ -254,7 +261,7 @@ void testApp::drawPointCloud() {
     
     curPitch = .9*curPitch + .1 *kinect.getAccelPitch();//dampen the pitch
     
-    ofRotate( curPitch, 1.f, 0.f, 0.f);
+    
     
 	glEnable(GL_DEPTH_TEST);
 	mesh.drawVertices();
