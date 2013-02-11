@@ -1,8 +1,10 @@
 #include "testApp.h"
 
-#define TWEEN_TIME 10.f
+#define TWEEN_TIME 5.f
+#define TWEEN_DELAY 35.f
 //--------------------------------------------------------------
 void testApp::setup() {
+    
 	ofSetLogLevel(OF_LOG_VERBOSE);
     Tweenzor::init();
 	
@@ -81,18 +83,19 @@ void testApp::setup() {
     vizVarSequence.push_back(vizVars()) ;
     vizVarSequence.push_back(vizVars()) ;    
     vizVarSequence.push_back(vizVars()) ;
+    vizVarSequence.push_back(vizVars()) ;
 
     
-    vizVarSequence[0].step = 8.88f;
-    vizVarSequence[0].pointSize = 9.36f;
-    vizVarSequence[0].colorWeight = 0.44f;
+    vizVarSequence[0].step = 6.53f;
+    vizVarSequence[0].pointSize = 6.f;
+    vizVarSequence[0].colorWeight = 1.f;
     
     vizVarSequence[1].step = 1.78f;
     vizVarSequence[1].pointSize = 2.37f;
     vizVarSequence[1].colorWeight = 0.49f;
     
-    vizVarSequence[2].step = 8.88f;
-    vizVarSequence[2].pointSize = 1.f;
+    vizVarSequence[2].step = 4.f;
+    vizVarSequence[2].pointSize = 2.f;
     vizVarSequence[2].colorWeight = 0.9f;
     
     vizVarSequence[3].step = 8.88f;
@@ -101,8 +104,12 @@ void testApp::setup() {
     
     
     vizVarSequence[4].step = 2.f;
-    vizVarSequence[4].pointSize = 5.f;
+    vizVarSequence[4].pointSize = 4.f;
     vizVarSequence[4].colorWeight = 0.f;
+    
+    vizVarSequence[5].step = 2.5f;
+    vizVarSequence[5].pointSize = 3.f;
+    vizVarSequence[5].colorWeight = 0.5f;
     
     
     tweening = true;
@@ -117,6 +124,8 @@ void testApp::setup() {
     easyCam.setPosition(0, 0, -1000);
     
     camMoved = false;
+    ofSetFullscreen(true);
+        gui->disable();
 }
 
 //--------------------------------------------------------------
@@ -171,10 +180,10 @@ void testApp::update() {
 
 //--------------------------------------------------------------
 void testApp::draw() {
-    float xPos = 500 * sin( xPosSinIndex );
-    xPosSinIndex+= .005;
-        easyCam.setPosition( xPos, -500, -500);
-    easyCam.lookAt( ofVec3f( -0.f, -0.f, -5000.f) );
+    float xPos = 1000 * sin( xPosSinIndex );
+    xPosSinIndex+= .0015;
+        easyCam.setPosition( xPos, -1000, -800);
+    easyCam.lookAt( ofVec3f( -0.f, 2000.f, -5000.f) );
     //easyCam.getPitch();
     
     //cout << "testApp::draw::easycamPitch:" << camPitch << endl;
@@ -219,9 +228,9 @@ void testApp::draw() {
 	<< "press c to close the connection and o to open it again, connection is: " << kinect.isConnected() << endl
 	<< "press UP and DOWN to change the tilt angle: " << angle << " degrees" << endl
 	<< "press 1-5 & 0 to change the led mode (mac/linux only)" << endl;
-	ofDrawBitmapString(reportStream.str(),20,652);
+	//ofDrawBitmapString(reportStream.str(),20,652);
     
-    
+    /*
     if(drawFill)
     {
         ofFill(); 
@@ -229,7 +238,8 @@ void testApp::draw() {
     else
     {
         ofNoFill(); 
-    }
+    }*/
+
 }
 
 void testApp::drawPointCloud() {
@@ -256,7 +266,7 @@ void testApp::drawPointCloud() {
 	ofPushMatrix();
 	// the projected points are 'upside down' and 'backwards' 
 	ofScale(1, -1, -1);
-	//ofTranslate(0, 0, -1000); // center the points a bit
+	ofTranslate(0, 0, -1000); // center the points a bit
     cout << "pitch:" << kinect.getAccelPitch() << ", roll:" << kinect.getAccelRoll() <<endl;
     
     curPitch = .9*curPitch + .1 *kinect.getAccelPitch();//dampen the pitch
@@ -387,9 +397,9 @@ void testApp::keyPressed (int key) {
 //--------------------------------------------------------------
 void testApp::gotoNextViz(){
 
-    Tweenzor::add( &step, step, vizVarSequence[ curVizVarIndex].step , 0.f, (float)TWEEN_TIME );
-    Tweenzor::add( &colorWeight, colorWeight, vizVarSequence[ curVizVarIndex].colorWeight , 0.f, (float)TWEEN_TIME );
-    Tweenzor::add( &pointSize, pointSize, vizVarSequence[ curVizVarIndex].pointSize , 0.f, (float)TWEEN_TIME );
+    Tweenzor::add( &step, step, vizVarSequence[ curVizVarIndex].step , TWEEN_DELAY, (float)TWEEN_TIME, EASE_IN_OUT_SINE );
+    Tweenzor::add( &colorWeight, colorWeight, vizVarSequence[ curVizVarIndex].colorWeight , TWEEN_DELAY, (float)TWEEN_TIME , EASE_IN_OUT_SINE);
+    Tweenzor::add( &pointSize, pointSize, vizVarSequence[ curVizVarIndex].pointSize , TWEEN_DELAY, (float)TWEEN_TIME , EASE_IN_OUT_SINE);
     Tweenzor::addCompleteListener(Tweenzor::getTween(&step), this, &testApp::onVizTweenComplete );
 
 }

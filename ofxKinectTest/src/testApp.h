@@ -89,6 +89,7 @@ public:
     bool camMoved;
     
     float xPosSinIndex;
+    ofImage bgImage;
     
     
 };
